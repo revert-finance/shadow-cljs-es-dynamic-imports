@@ -1,0 +1,12 @@
+;; shadow-cljs configuration
+{:deps true
+ :dev-http {8280 {:root "public"}}
+
+ :builds
+ {:dev {:target :browser
+        :modules {:main {:init-fn rainbow/init}}
+        :compiler-options {:infer-externs :auto
+                           :cross-chunk-method-motion false}
+        :js-options {:js-provider :shadow}
+        :devtools {:repl-init-ns rainbow
+                   :repl-pprint true}}}}

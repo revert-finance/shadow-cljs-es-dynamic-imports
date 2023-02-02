@@ -1,0 +1,48 @@
+#+TITLE: Dynamic import issue demo
+
+* Setup
+** NPM packages
+#+NAME: install
+#+BEGIN_SRC bash
+  npm install
+#+END_SRC
+
+** Run
+
+#+NAME: run dev mode
+#+BEGIN_SRC bash
+  clj -M:shadow-cljs watch dev
+#+END_SRC
+
+Open [[http://localhost:8280][localhost:8280]]
+
+* TLDR;
+
+Seems that dynamic imports are not working, previously it was a thing of the google closure compiler not supporting it but now it I think is supported according to https://github.com/google/closure-compiler/wiki/JS-Modules#dynamic-import-expressions.
+
+In this case I am using [[https://www.rainbowkit.com/][Rainbow kit]] a library to connect and use a crypto wallet. This library is using dynamic imports to fetch svg's https://github.com/rainbow-me/rainbowkit/blob/2e6bb8ff3850eb4e341d82b77d52b18df4bfd698/packages/rainbowkit/src/wallets/walletConnectors/metaMaskWallet/metaMaskWallet.ts#L53.
+
+The issue happens when you click the connect button and the main modal appears.
+
+To demonstrate it I created this demo that has 2 "Connect Wallet" buttons side by side.
+
+#+CAPTION: Home of the demo project
+#+NAME:   fig:home
+[[./screenshots/home.png]]
+
+1. One using the [[https://www.rainbowkit.com/][Rainbow kit]] npm library as shadow cljs users guide indicates ([[https://shadow-cljs.github.io/docs/UsersGuide.html#_using_npm_packages][using npm packages]]). [[https://github.com/revert-finance/shadow-cljs-es-dynamic-imports/blob/main/src/main/rainbow.cljs#L36][Button source code]]
+2. Other using a compiled version of this library that uses a babel plugin to remove the dynamic imports ([[https://github.com/ChristianMurphy/babel-plugin-transform-dynamic-imports-to-static-imports][babel-plugin-transform-dynamic-imports-to-static-imports]]). Check the vite.config.ts file. [[https://github.com/revert-finance/shadow-cljs-es-dynamic-imports/blob/main/src/main/rainbow.cljs#L21][Button source code]]
+
+** 1. This is the result when using the library as an npm package
+As you can see the wallet icons are missing
+
+#+CAPTION: With dynamic imports
+#+NAME:   fig:dynamic
+[[./screenshots/with-dynamic.png]]
+
+** 2. This is the result when removing the dynamic imports
+As you can see the wallet icons are not missing
+
+#+CAPTION: Without imports
+#+NAME:   fig:without-dynamic
+[[./screenshots/without-dynamic.png]]
